@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS matches (
   leagueId INTEGER,
   homeTeam INTEGER,
   awayTeam INTEGER,
+  dateTime VARCHAR,
   FOREIGN KEY (leagueId) REFERENCES leagues(id),
   FOREIGN KEY (homeTeam) REFERENCES teams(id),
   FOREIGN KEY (awayTeam) REFERENCES teams(id)
