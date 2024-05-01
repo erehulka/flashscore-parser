@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS leagues (
 );
 
 CREATE TABLE IF NOT EXISTS teams (
-  id INTEGER PRIMARY KEY UNIQUE,
+  id VARCHAR PRIMARY KEY UNIQUE,
   country VARCHAR,
   name VARCHAR,
   urlName VARCHAR UNIQUE
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS teams (
 
 CREATE TABLE IF NOT EXISTS teamMatchStats (
   id INTEGER PRIMARY KEY UNIQUE,
-  team INTEGER,
+  team VARCHAR,
   goals INTEGER NOT NULL,
   expectedGoals FLOAT,
   ballPossession FLOAT,
@@ -37,8 +37,8 @@ CREATE TABLE IF NOT EXISTS teamMatchStats (
 CREATE TABLE IF NOT EXISTS matches (
   id VARCHAR PRIMARY KEY UNIQUE,
   leagueId INTEGER,
-  homeTeam INTEGER,
-  awayTeam INTEGER,
+  homeTeam VARCHAR,
+  awayTeam VARCHAR,
   dateTime VARCHAR,
   FOREIGN KEY (leagueId) REFERENCES leagues(id),
   FOREIGN KEY (homeTeam) REFERENCES teams(id),

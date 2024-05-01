@@ -1,2 +1,4 @@
 selenium
 bs4
+sqlite3
+mypy

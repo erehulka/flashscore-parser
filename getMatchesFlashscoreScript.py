@@ -1,4 +1,5 @@
 import re
+import sqlite3
 import time
 from selenium import webdriver # Selenium needed because of need to click buttons on the web
 from selenium.webdriver.chrome.options import Options
@@ -6,6 +7,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
+
+from utils.parseMatch import parseMatch
 
 # Configure browser options
 options = Options()
@@ -51,6 +54,10 @@ for match in matches:
     matchIdParsed = re.sub(r'^g_1_(.*)$', r'\1', matchId) # We need to get only faTuORtF
     matchIds.append(matchIdParsed)
 
-# TODO - open each match and parse the data
+connection = sqlite3.connect('matches.db')
 
+for id in matchIds:
+    parseMatch(id, connection=connection)
+
+connection.close()
 driver.quit()
