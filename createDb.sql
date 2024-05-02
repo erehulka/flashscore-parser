@@ -23,7 +23,6 @@ CREATE TABLE IF NOT EXISTS teamMatchStats (
   freeKicks INTEGER,
   corners INTEGER,
   offsides INTEGER,
-  throwIns INTEGER,
   goalieSaves INTEGER,
   fouls INTEGER,
   yellowCards INTEGER,
@@ -35,13 +34,13 @@ CREATE TABLE IF NOT EXISTS teamMatchStats (
 );
 
 CREATE TABLE IF NOT EXISTS matches (
-  id VARCHAR PRIMARY KEY UNIQUE,
+  id INTEGER PRIMARY KEY UNIQUE,
   leagueId INTEGER,
   homeTeam VARCHAR,
   awayTeam VARCHAR,
   dateTime VARCHAR,
   FOREIGN KEY (leagueId) REFERENCES leagues(id),
-  FOREIGN KEY (homeTeam) REFERENCES teams(id),
-  FOREIGN KEY (awayTeam) REFERENCES teams(id)
+  FOREIGN KEY (homeTeam) REFERENCES teamMatchStats(id),
+  FOREIGN KEY (awayTeam) REFERENCES teamMatchStats(id)
 );
 

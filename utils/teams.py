@@ -20,7 +20,6 @@ def teamExists(id: str, connection: sqlite3.Connection) -> bool:
   return count > 0
 
 def createTeam(team: Team, connection: sqlite3.Connection) -> None:
-  print(team)
   cursor = connection.cursor()
 
   cursor.execute("INSERT INTO teams VALUES(?, ?, ?, ?)", (team.id, team.country, team.name, team.urlName))
