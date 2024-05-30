@@ -1,7 +1,6 @@
-from dataclasses import dataclass
-import re
+from datetime import datetime
 import sqlite3
-from typing import Literal, Optional
+from typing import Literal
 from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
@@ -32,72 +31,72 @@ def parseTeamMatch(teamId: str, side: Literal['home', 'away'], source: Beautiful
   dangerousAttacks = None
 
   try:
-      expectedGoals = source.select_one('._category_n1rcj_16:contains("Očakávané góly")').select('._simpleText_ghuv4_5')[0 if side == 'home' else -1].get_text(strip=True)
+      expectedGoals = source.select_one('[data-testid="wcl-statistics"]:contains("Očakávané góly")').select('[data-testid="wcl-statistics-value"]')[0 if side == 'home' else -1].get_text(strip=True)
   except AttributeError:
       pass
 
   try:
-      ballPossession = source.select_one('._category_n1rcj_16:contains("Držanie lopty")').select('._simpleText_ghuv4_5')[0 if side == 'home' else -1].get_text(strip=True).removesuffix('%')
+      ballPossession = source.select_one('[data-testid="wcl-statistics"]:contains("Držanie lopty")').select('[data-testid="wcl-statistics-value"]')[0 if side == 'home' else -1].get_text(strip=True).removesuffix('%')
   except AttributeError:
       pass
 
   try:
-      shotsTotal = source.select_one('._category_n1rcj_16:contains("Strely celkom")').select('._simpleText_ghuv4_5')[0 if side == 'home' else -1].get_text(strip=True)
+      shotsTotal = source.select_one('[data-testid="wcl-statistics"]:contains("Strely celkom")').select('[data-testid="wcl-statistics-value"]')[0 if side == 'home' else -1].get_text(strip=True)
   except AttributeError:
       pass
 
   try:
-      shotsOnGoal = source.select_one('._category_n1rcj_16:contains("Strely na bránku")').select('._simpleText_ghuv4_5')[0 if side == 'home' else -1].get_text(strip=True)
+      shotsOnGoal = source.select_one('[data-testid="wcl-statistics"]:contains("Strely na bránku")').select('[data-testid="wcl-statistics-value"]')[0 if side == 'home' else -1].get_text(strip=True)
   except AttributeError:
       pass
 
   try:
-      freeKicks = source.select_one('._category_n1rcj_16:contains("Priame kopy")').select('._simpleText_ghuv4_5')[0 if side == 'home' else -1].get_text(strip=True)
+      freeKicks = source.select_one('[data-testid="wcl-statistics"]:contains("Priame kopy")').select('[data-testid="wcl-statistics-value"]')[0 if side == 'home' else -1].get_text(strip=True)
   except AttributeError:
       pass
 
   try:
-      corners = source.select_one('._category_n1rcj_16:contains("Rohové kopy")').select('._simpleText_ghuv4_5')[0 if side == 'home' else -1].get_text(strip=True)
+      corners = source.select_one('[data-testid="wcl-statistics"]:contains("Rohové kopy")').select('[data-testid="wcl-statistics-value"]')[0 if side == 'home' else -1].get_text(strip=True)
   except AttributeError:
       pass
 
   try:
-      offsides = source.select_one('._category_n1rcj_16:contains("Ofsajdy")').select('._simpleText_ghuv4_5')[0 if side == 'home' else -1].get_text(strip=True)
+      offsides = source.select_one('[data-testid="wcl-statistics"]:contains("Ofsajdy")').select('[data-testid="wcl-statistics-value"]')[0 if side == 'home' else -1].get_text(strip=True)
   except AttributeError:
       pass
 
   try:
-      goalieSaves = source.select_one('._category_n1rcj_16:contains("Zákroky brankárov")').select('._simpleText_ghuv4_5')[0 if side == 'home' else -1].get_text(strip=True)
+      goalieSaves = source.select_one('[data-testid="wcl-statistics"]:contains("Zákroky brankárov")').select('[data-testid="wcl-statistics-value"]')[0 if side == 'home' else -1].get_text(strip=True)
   except AttributeError:
       pass
 
   try:
-      fouls = source.select_one('._category_n1rcj_16:contains("Fauly")').select('._simpleText_ghuv4_5')[0 if side == 'home' else -1].get_text(strip=True)
+      fouls = source.select_one('[data-testid="wcl-statistics"]:contains("Fauly")').select('[data-testid="wcl-statistics-value"]')[0 if side == 'home' else -1].get_text(strip=True)
   except AttributeError:
       pass
 
   try:
-      yellowCards = source.select_one('._category_n1rcj_16:contains("Žlté karty")').select('._simpleText_ghuv4_5')[0 if side == 'home' else -1].get_text(strip=True)
+      yellowCards = source.select_one('[data-testid="wcl-statistics"]:contains("Žlté karty")').select('[data-testid="wcl-statistics-value"]')[0 if side == 'home' else -1].get_text(strip=True)
   except AttributeError:
       pass
 
   try:
-      redCards = source.select_one('._category_n1rcj_16:contains("Červené karty")').select('._simpleText_ghuv4_5')[0 if side == 'home' else -1].get_text(strip=True)
+      redCards = source.select_one('[data-testid="wcl-statistics"]:contains("Červené karty")').select('[data-testid="wcl-statistics-value"]')[0 if side == 'home' else -1].get_text(strip=True)
   except AttributeError:
       pass
 
   try:
-      passes = source.select_one('._category_n1rcj_16:contains("Prihrávok celkom")').select('._simpleText_ghuv4_5')[0 if side == 'home' else -1].get_text(strip=True)
+      passes = source.select_one('[data-testid="wcl-statistics"]:contains("Prihrávok celkom")').select('[data-testid="wcl-statistics-value"]')[0 if side == 'home' else -1].get_text(strip=True)
   except AttributeError:
       pass
 
   try:
-      attacks = source.select_one('._category_n1rcj_16:contains("Útoky")').select('._simpleText_ghuv4_5')[0 if side == 'home' else -1].get_text(strip=True)
+      attacks = source.select_one('[data-testid="wcl-statistics"]:contains("Útoky")').select('[data-testid="wcl-statistics-value"]')[0 if side == 'home' else -1].get_text(strip=True)
   except AttributeError:
       pass
 
   try:
-      dangerousAttacks = source.select_one('._category_n1rcj_16:contains("Nebezpečné útoky")').select('._simpleText_ghuv4_5')[0 if side == 'home' else -1].get_text(strip=True)
+      dangerousAttacks = source.select_one('[data-testid="wcl-statistics"]:contains("Nebezpečné útoky")').select('[data-testid="wcl-statistics-value"]')[0 if side == 'home' else -1].get_text(strip=True)
   except AttributeError:
       pass
   
@@ -121,8 +120,29 @@ def parseMatch(matchId: str, connection: sqlite3.Connection) -> None:
   driver = webdriver.Chrome(options=options)
   driver.get(url)
   WebDriverWait(driver, 10).until(
-      EC.presence_of_element_located((By.CLASS_NAME, 'duelParticipant__home'))
+    EC.presence_of_element_located((By.CLASS_NAME, 'duelParticipant__home'))
   )
+
+  accept_button = WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.ID, 'onetrust-accept-btn-handler'))
+  )
+  accept_button.click()
+
+  # Wait for the cookie banner to be removed
+  WebDriverWait(driver, 10).until(
+    EC.invisibility_of_element_located((By.ID, 'onetrust-banner-sdk'))
+  )
+
+  show_more_button = WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.CSS_SELECTOR, 'a.showMore[href="#/prehlad-zapasu/statistiky-zapasu"]'))
+  )
+  # Click the button
+  show_more_button.click()
+  # Wait until statistics are shown
+  WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.CSS_SELECTOR, '[data-testid="wcl-statistics"]'))
+  )
+
   parsed = BeautifulSoup(driver.page_source, 'html.parser')
 
   homeTeamId = parsed.select_one('.duelParticipant__home .participant__participantName a').attrs['href'].rstrip('/').split('/')[-1]
@@ -138,9 +158,13 @@ def parseMatch(matchId: str, connection: sqlite3.Connection) -> None:
   if leagueId is None:
     leagueId = parseLeague(leagueUrl, connection)
 
+  dateTimeStart = parsed.select_one('.duelParticipant__startTime').get_text(strip=True)
+  dateObj = datetime.strptime(dateTimeStart, "%d.%m.%Y %H:%M")
+  formattedDateTime = dateObj.strftime("%Y-%m-%d %H:%M")
+
   homeId = parseTeamMatch(teamId=homeTeamId, side='home', source=parsed, connection=connection)
   awayId = parseTeamMatch(teamId=awayTeamId, side='away', source=parsed, connection=connection)
 
   cursor = connection.cursor()
-  cursor.execute("INSERT INTO matches (leagueId, homeTeam, awayTeam, dateTime) VALUES (?, ?, ?, ?)", (leagueId, homeId, awayId, 'TODO'))
+  cursor.execute("INSERT INTO matches (matchId, leagueId, homeTeam, awayTeam, dateTime) VALUES (?, ?, ?, ?, ?)", (matchId, leagueId, homeId, awayId, formattedDateTime))
   connection.commit()
