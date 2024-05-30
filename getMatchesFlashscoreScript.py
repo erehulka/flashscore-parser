@@ -9,6 +9,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 
 from utils.parseMatch import parseMatch
+import logging
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename='log/error.log', encoding='utf-8', level=logging.INFO)
 
 # Configure browser options
 options = Options()
@@ -28,7 +32,7 @@ try:
     cookie_consent.click()
     time.sleep(10)
 except:
-    print("Cookie consent not found or error dismissing it")
+    logger.info("Cookie consent not found or error dismissing it")
 
 # Click the "yesterday" button twice
 try:
@@ -37,8 +41,8 @@ try:
         yesterday_button.click()
         time.sleep(5)
 except Exception as e:
-    print("Error clicking yesterday button")
-    print(e)
+    logger.error("Error clicking yesterday button")
+    logger.error(e)
     exit(1)
 
 time.sleep(10)
@@ -60,7 +64,7 @@ for id in matchIds:
     try:
         parseMatch(id, connection=connection)
     except Exception as e:
-        print(f"Error when parsing match: {e}")
+        logger.error(f"Error when parsing match {matchId}: {e}")
 
 connection.close()
 driver.quit()
