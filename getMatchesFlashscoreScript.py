@@ -64,7 +64,7 @@ for id in matchIds:
     try:
         parseMatch(id, connection=connection)
     except Exception as e:
-        logger.error(f"Error when parsing match {matchId}: {e}")
+        logger.error(f"Error when parsing match {id}: {e}")
 
 connection.close()
 driver.quit()
