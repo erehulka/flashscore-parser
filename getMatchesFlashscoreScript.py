@@ -57,7 +57,10 @@ for match in matches:
 connection = sqlite3.connect('matches.db')
 
 for id in matchIds:
-    parseMatch(id, connection=connection)
+    try:
+        parseMatch(id, connection=connection)
+    except Exception as e:
+        print(f"Error when parsing match: {e}")
 
 connection.close()
 driver.quit()

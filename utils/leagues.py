@@ -27,7 +27,7 @@ def parseLeague(urlAdd: str, connection: sqlite3.Connection) -> int:
   text = requests.get(url).text
   parsed = BeautifulSoup(text, 'html.parser')
 
-  createLeague(country=parsed.select('.breadcrumb__link')[-1].get_text(strip=True), name=parsed.select_one('.heading__name').get_text(strip=True), urlName='/'.join(urlAdd.rstrip('/').split('/')[1:]), connection=connection)
+  return createLeague(country=parsed.select('.breadcrumb__link')[-1].get_text(strip=True), name=parsed.select_one('.heading__name').get_text(strip=True), urlName='/'.join(urlAdd.rstrip('/').split('/')[1:]), connection=connection)
 
 def createLeague(country: str, name: str, urlName: str, connection: sqlite3.Connection) -> int:
   cursor = connection.cursor()
