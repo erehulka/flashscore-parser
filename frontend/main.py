@@ -1,4 +1,3 @@
-import json
 from flask import Flask, render_template, g
 import sqlite3
 
@@ -17,38 +16,32 @@ def teardown_request(exception):
     if db is not None:
         db.close()
 
-# From here todo
-
 @app.route('/')
 def home():
     cursor = g.db.cursor()
-    cursor.execute("SELECT id, username FROM users ORDER BY lower(username)")
-    users = []
-
+    cursor.execute("SELECT id, country, name FROM leagues ORDER BY lower(country)")
+    leagues = []
     for row in cursor:
-        users.append(row)
-    return render_template('main.html', users=users)
+        leagues.append(row)
 
-@app.route('/user/<user_id>/')
-def user(user_id):
+    return render_template('main.html', leagues=leagues)
+
+@app.route('/league/<league_id>')
+def league(league_id):
     cursor = g.db.cursor()
-    cursor.execute("SELECT title, content, datetime FROM comments WHERE userId = ? ORDER BY datetime DESC", (user_id,))
-    comments = []
+    cursor.execute("""
+                   SELECT DISTINCT t.id, t.name FROM teams t 
+                   JOIN teamMatchStats tms ON tms.team = t.id 
+                   JOIN matches m ON m.homeTeam = tms.id OR m.awayTeam = tms.id
+                   WHERE m.leagueId = ? 
+                   ORDER BY lower(name)
+                   """, (league_id,))
+    teams = []
     for row in cursor:
-        comments.append({'title': row[0], 'content': row[1], 'datetime': row[2]})
+        teams.append(row)
 
-    cursor.execute("SELECT username, top10, top3SimilarUsers FROM users WHERE id = ?", (user_id,))
-    user = cursor.fetchone()
+    return render_template('league.html', teams=teams)
 
-    top3SimilarUsers = []
-    for similar in json.loads(user[2]):
-        cursor.execute("SELECT username FROM users WHERE id = ?", (similar,))
-        top3SimilarUsers.append((similar, cursor.fetchone()[0]))
-
-    return render_template('user.html',
-                           comments=comments,
-                           user=user[0],
-                           n_of_comments=len(comments),
-                           top10=json.loads(user[1]),
-                           similarUsers=top3SimilarUsers
-                           )
+@app.route('/team/<team_id>')
+def team(team_id):
+    return render_template('team.html')

@@ -22,5 +22,8 @@
 
     - Also, how many matches we have parsed etc.
   -->
+  {% for league in leagues %}
+    <a href="{{ url_for("league", league_id=league[0]) }}">{{ league[1] }} - {{ league[2] }}</a><br>
+  {% endfor %}
 </body>
 </html>
