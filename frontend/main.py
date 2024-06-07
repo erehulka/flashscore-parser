@@ -49,7 +49,10 @@ def home():
     for row in cursor:
         avgEffectivityPerDay[row[0]] = row[1]
 
-    return render_template('main.html', leagues=leagues, avgEffectivity=avgEffectivity, avgEffectivityPerDay=avgEffectivityPerDay)
+    cursor.execute("SELECT COUNT(*) FROM matches")
+    parsedMatches = cursor.fetchone()[0]
+
+    return render_template('main.html', leagues=leagues, avgEffectivity=avgEffectivity, avgEffectivityPerDay=avgEffectivityPerDay, parsedMatches=parsedMatches)
 
 @app.route('/league/<league_id>')
 def league(league_id):
@@ -70,7 +73,10 @@ def league(league_id):
                    """, (league_id,))
     league_info = cursor.fetchone()
 
-    return render_template('league.html', teams=teams, league_id=league_id, league_info=league_info)
+    cursor.execute("SELECT COUNT(*) FROM matches WHERE leagueId = ?", (league_id,))
+    parsedMatches = cursor.fetchone()[0]
+
+    return render_template('league.html', teams=teams, league_id=league_id, league_info=league_info, parsedMatches=parsedMatches)
 
 @app.route('/team/<league_id>/<team_id>')
 def team(league_id, team_id):
@@ -113,15 +119,46 @@ def team(league_id, team_id):
         avgEffectivityPerDay[row[0]] = row[1]
 
     cursor.execute("""
-                    SELECT AVG(tms.goals / tms.expectedGoals) as avg_effectivity
+                    SELECT 
+                        AVG(tms.goals / tms.expectedGoals) as avg_effectivity, 
+                        AVG(tms.shotsTotal), 
+                        AVG(tms.shotsOnGoal), 
+                        AVG(tms.fouls), 
+                        AVG(tms.yellowCards), 
+                        AVG(tms.redCards),
+                        AVG(tms.passes)
                     FROM teamMatchStats tms
                     WHERE tms.expectedGoals IS NOT NULL and tms.expectedGoals > 0 AND tms.team = ?
                    """, (team_id,))
-    avgEffectivity = round(cursor.fetchone()[0] or 0, 2)
+    fetched = cursor.fetchone()
+    averageStats = {
+        'effectivity': round(fetched[0] or 0, 2),
+        'shotsTotal': round(fetched[1] or 0, 2),
+        'shotsOnGoal': round(fetched[2] or 0, 2),
+        'fouls': round(fetched[3] or 0, 2),
+        'yellowCards': round(fetched[4] or 0, 2),
+        'redCards': round(fetched[5] or 0, 2),
+        'passes': round(fetched[6] or 0, 2),
+    }
 
     cursor.execute("""
                    SELECT urlName, name FROM teams WHERE id = ?
                    """, (team_id,))
     team_info = cursor.fetchone()
 
-    return render_template('team.html', last5Matches=last5Matches, league_id=league_id, avgEffectivityPerDay=avgEffectivityPerDay, avgEffectivity=avgEffectivity, team_info=team_info)
+    cursor.execute("""
+                   SELECT COUNT(*) FROM matches m
+                   JOIN teamMatchStats tms ON tms.id = m.homeTeam OR tms.id = m.awayTeam
+                   WHERE tms.team = ?
+                   """
+                   , (team_id,))
+    parsedMatches = cursor.fetchone()[0]
+
+    return render_template('team.html', last5Matches=last5Matches, league_id=league_id, avgEffectivityPerDay=avgEffectivityPerDay, averageStats=averageStats, team_info=team_info, parsedMatches=parsedMatches)
+
+
+"""
+TODO:
+- if there is no value, for example for fouls, either not average, do not show the card with zero.
+- Some more stats
+"""

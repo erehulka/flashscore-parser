@@ -48,6 +48,12 @@
       chart.draw(data, options);
     }
   </script>
+
+  <style>
+    .card {
+      margin-top: 1em;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -57,6 +63,11 @@
     </div>
     <div class="row">
       <h1>{{ team_info[1] }}</h2>
+    </div>
+    <div class="row">
+      <div class="col">
+        <p>So far we have parsed <b>{{ parsedMatches }}</b> matches for this team</p>
+      </div>
     </div>
     <div class="row">
       <div class="col">
@@ -72,7 +83,49 @@
       <div class="col-lg-6 col-12">
         <div class="card">
           <div class="card-body">
-            <span>Average effectivity = <b>{{ avgEffectivity }}</b></span>
+            <span>Average effectivity = <b>{{ averageStats['effectivity'] }}</b></span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-12">
+        <div class="card">
+          <div class="card-body">
+            <span>Average shots total = <b>{{ averageStats['shotsTotal'] }}</b></span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-12">
+        <div class="card">
+          <div class="card-body">
+            <span>Average shots on goal = <b>{{ averageStats['shotsOnGoal'] }}</b></span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-12">
+        <div class="card">
+          <div class="card-body">
+            <span>Average fouls = <b>{{ averageStats['fouls'] }}</b></span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-12">
+        <div class="card">
+          <div class="card-body">
+            <span>Average yellow cards = <b>{{ averageStats['yellowCards'] }}</b></span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-12">
+        <div class="card">
+          <div class="card-body">
+            <span>Average red cards = <b>{{ averageStats['redCards'] }}</b></span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-12">
+        <div class="card">
+          <div class="card-body">
+            <span>Average passes = <b>{{ averageStats['passes'] }}</b></span>
           </div>
         </div>
       </div>
