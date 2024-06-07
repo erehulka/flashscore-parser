@@ -7,19 +7,82 @@
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+    // Load the Visualization API and the corechart package.
+    google.charts.load('current', {'packages':['corechart']});
+
+    // Set a callback to run when the Google Visualization API is loaded.
+    google.charts.setOnLoadCallback(drawChart);
+
+    // Callback that creates and populates a data table,
+    // instantiates the chart, passes in the data and
+    // draws it.
+    function drawChart() {
+      // Create the data table.
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Date');
+      data.addColumn('number', 'Effectivity');
+
+      // Sample data
+      var avgEffectivityPerDay = {{ avgEffectivityPerDay | tojson }};      
+      // Fill the data table with values from the dictionary
+      for (let date in avgEffectivityPerDay) {
+        data.addRow([date, avgEffectivityPerDay[date]]);
+      }
+
+      // Set chart options
+      var options = {
+        title: 'Average Effectivity Per Day',
+        curveType: 'function',
+        legend: { position: 'bottom' },
+        hAxis: { title: 'Date' },
+        vAxis: { title: 'Effectivity' },
+        width: '100%',
+        height: '100%'
+      };
+
+      // Instantiate and draw our chart, passing in some options.
+      var chart = new google.visualization.LineChart(document.getElementById('goal_effectivity_graph'));
+      chart.draw(data, options);
+    }
+  </script>
 </head>
 <body>
   <div class="container">
     <div class="row pt-5">
       <p><a href="{{ url_for("league", league_id=league_id) }}">go back</a></p>
+      <p><a href="https://www.flashscore.sk/{{ team_info[0] }}" target="_blank">open in flashscore</a></p>
     </div>
     <div class="row">
-      <h2>Last 5 matches</h2>
+      <h1>{{ team_info[1] }}</h2>
+    </div>
+    <div class="row">
+      <div class="col">
+        <h2>Last 5 matches</h2>
         <ul class="list-group">
           {% for match in last5Matches %}
-            <li class="list-group-item">vs <a href="http://flashscore.sk/zapas/{{ match[0] }}" target="_blank">{{ match[0] }}</a></li>
+            <li class="list-group-item"><a href="http://flashscore.sk/zapas/{{ match['matchId'] }}" target="_blank">{{ match['homeTeam'] }} {{ match['homeGoals'] }} - {{ match['awayGoals'] }} {{ match['awayTeam'] }}</a></li>
           {% endfor %}
         </ul>  
+      </div>
+    </div>
+    <div class="row mt-5">
+      <div class="col-lg-6 col-12">
+        <div class="card">
+          <div class="card-body">
+            <span>Average effectivity = <b>{{ avgEffectivity }}</b></span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-12">
+        <div class="card">
+          <div class="card-body">
+            <div id="goal_effectivity_graph" style="width: 100%; height: 100%;"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </body>
