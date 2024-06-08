@@ -50,7 +50,6 @@
 <body>
   <!--
     Functionalities:
-    - Then stats page, which will show what teams have the best goals / expected goals ratio
     - Also, on this page maybe which teams score the most goals per game
     - Which teams get the most yellow cards per game
 
@@ -98,6 +97,62 @@
           </div>
         </div>
       </div>
+      {% if teamsWithBestEffectivity %}
+        <div class="col-lg-6 col-12 mt-3">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Teams with best effectivity</h5>
+              <ul class="list-group">
+                {% for team in teamsWithBestEffectivity %}
+                  <li class="list-group-item"><a href="{{ url_for("team", team_id=team[1]) }}">{{ team[0] }}</a> - <b>{{ team[2] }}</b></li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      {% if teamsWithWorstEffectivity %}
+        <div class="col-lg-6 col-12 mt-3">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Teams with worst effectivity</h5>
+              <ul class="list-group">
+                {% for team in teamsWithWorstEffectivity %}
+                  <li class="list-group-item"><a href="{{ url_for("team", team_id=team[1]) }}">{{ team[0] }}</a> - <b>{{ team[2] }}</b></li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      {% if mostYellowCardsPerGame %}
+        <div class="col-lg-6 col-12 mt-3">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Teams with most yellow cards per game</h5>
+              <ul class="list-group">
+                {% for team in mostYellowCardsPerGame %}
+                  <li class="list-group-item"><a href="{{ url_for("team", team_id=team[1]) }}">{{ team[0] }}</a> - <b>{{ team[2] }}</b></li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      {% if mostGoalsPerGame %}
+        <div class="col-lg-6 col-12 mt-3">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Teams with most goals per game</h5>
+              <ul class="list-group">
+                {% for team in mostGoalsPerGame %}
+                  <li class="list-group-item"><a href="{{ url_for("team", team_id=team[1]) }}">{{ team[0] }}</a> - <b>{{ team[2] }}</b></li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      {% endif %}
     </div>
   </div>
 </body>

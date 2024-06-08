@@ -58,7 +58,11 @@
 <body>
   <div class="container mb-5">
     <div class="row pt-5">
-      <p><a href="{{ url_for("league", league_id=league_id) }}">go back</a></p>
+      {% if league_id %}
+        <p><a href="{{ url_for("league", league_id=league_id) }}">go back</a></p>
+      {% else %}
+        <p><a href="{{ url_for("home") }}">go back</a></p>
+      {% endif %}
       <p><a href="https://www.flashscore.sk/{{ team_info[0] }}" target="_blank">open in flashscore</a></p>
     </div>
     <div class="row">

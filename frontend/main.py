@@ -52,7 +52,67 @@ def home():
     cursor.execute("SELECT COUNT(*) FROM matches")
     parsedMatches = cursor.fetchone()[0]
 
-    return render_template('main.html', leagues=leagues, avgEffectivity=avgEffectivity, avgEffectivityPerDay=avgEffectivityPerDay, parsedMatches=parsedMatches)
+    cursor.execute("""
+                   SELECT t.name, t.id, AVG(tms.goals / tms.expectedGoals) as avg_effectivity
+                   FROM teamMatchStats tms
+                   JOIN teams t ON t.id = tms.team
+                   WHERE tms.expectedGoals IS NOT NULL and tms.expectedGoals > 0
+                   GROUP BY t.id
+                   ORDER BY avg_effectivity DESC
+                   LIMIT 10
+                   """)
+    teamsWithBestEffectivity = []
+    for row in cursor:
+        teamsWithBestEffectivity.append([row[0], row[1], round(row[2] or 0, 2)])
+
+    cursor.execute("""
+                   SELECT t.name, t.id, AVG(tms.goals / tms.expectedGoals) as avg_effectivity
+                   FROM teamMatchStats tms
+                   JOIN teams t ON t.id = tms.team
+                   WHERE tms.expectedGoals IS NOT NULL and tms.expectedGoals > 0
+                   GROUP BY t.id
+                   ORDER BY avg_effectivity ASC
+                   LIMIT 10
+                   """)
+    teamsWithWorstEffectivity = []
+    for row in cursor:
+        teamsWithWorstEffectivity.append([row[0], row[1], round(row[2] or 0, 2)])
+
+    cursor.execute("""
+                   SELECT t.name, t.id, AVG(tms.yellowCards) as avgYC
+                   FROM teamMatchStats tms
+                   JOIN teams t ON t.id = tms.team
+                   GROUP BY t.id
+                   ORDER BY avgYC DESC
+                   LIMIT 10
+                   """)
+    mostYellowCardsPerGame = []
+    for row in cursor:
+        mostYellowCardsPerGame.append([row[0], row[1], round(row[2] or 0, 2)])
+
+    cursor.execute("""
+                   SELECT t.name, t.id, AVG(tms.goals) as avgYC
+                   FROM teamMatchStats tms
+                   JOIN teams t ON t.id = tms.team
+                   GROUP BY t.id
+                   ORDER BY avgYC DESC
+                   LIMIT 10
+                   """)
+    mostGoalsPerGame = []
+    for row in cursor:
+        mostGoalsPerGame.append([row[0], row[1], round(row[2] or 0, 2)])
+
+    return render_template(
+        'main.html', 
+        leagues=leagues, 
+        avgEffectivity=avgEffectivity, 
+        avgEffectivityPerDay=avgEffectivityPerDay, 
+        parsedMatches=parsedMatches,
+        teamsWithBestEffectivity=teamsWithBestEffectivity,
+        teamsWithWorstEffectivity=teamsWithWorstEffectivity,
+        mostYellowCardsPerGame=mostYellowCardsPerGame,
+        mostGoalsPerGame=mostGoalsPerGame
+    )
 
 @app.route('/league/<league_id>')
 def league(league_id):
@@ -113,11 +173,12 @@ def league(league_id):
         league_info=league_info, 
         parsedMatches=parsedMatches,
         goalsLastMonth=goalsLastMonth,
-        teamsWithBestEffectivity=teamsWithBestEffectivity
+        teamsWithBestEffectivity=teamsWithBestEffectivity,
     )
 
-@app.route('/team/<league_id>/<team_id>')
-def team(league_id, team_id):
+@app.route('/team/<team_id>')
+@app.route('/team/<team_id>/<league_id>')
+def team(team_id, league_id = None):
     cursor = g.db.cursor()
     cursor.execute("""
                    SELECT m.matchId, tHome.name, tAway.name, tmsHome.goals, tmsAway.goals
