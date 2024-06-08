@@ -7,9 +7,33 @@
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Team');
+      data.addColumn('number', 'Goals last month');
+      var goalsLastMonth = {{ goalsLastMonth | tojson }};
+      // Fill the data table with values from the dictionary
+      for (let team in goalsLastMonth) {
+        data.addRow([team, goalsLastMonth[team]]);
+      }
+      var options = {
+        title: 'Goals last month'
+      };
+
+      var chart = new google.visualization.PieChart(document.getElementById('most_goals_last_month'));
+
+      chart.draw(data, options);
+    }
+  </script>
 </head>
 <body>
-  <div class="container">
+  <div class="container mb-5">
     <div class="row pt-5">
       <p><a href="{{ url_for("home") }}">go back</a></p>
       <p><a href="https://www.flashscore.sk/{{ league_info[0] }}" target="_blank">open in flashscore</a></p>
@@ -35,7 +59,30 @@
   
     <div class="row pt-5">
       <h2>Data</h2>
-    </div>    
+    </div>
+    <div class="row">
+      <div class="col-lg-6 col-12">
+        <div class="card">
+          <div class="card-body">
+            <div id="most_goals_last_month" style="height: 500px;" class="w-100"></div>  
+          </div>
+        </div>
+      </div>
+      {% if teamsWithBestEffectivity %}
+        <div class="col-lg-6 col-12">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Teams with best effectivity</h5>
+              <ul class="list-group">
+                {% for team in teamsWithBestEffectivity %}
+                  <li class="list-group-item">{{ team[0] }} - <b>{{ team[1] }}</b></li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
   </div>
 </body>
 </html>

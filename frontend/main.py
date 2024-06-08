@@ -32,7 +32,7 @@ def home():
                    """)
     avgEffectivity = round(cursor.fetchone()[0], 2)
 
-    tenDaysAgo = (datetime.today() - timedelta(days=10)).strftime('%Y-%m-%d')
+    oneMonthAgo = (datetime.today() - timedelta(days=31)).strftime('%Y-%m-%d')
 
     cursor.execute(
         """
@@ -43,7 +43,7 @@ def home():
             GROUP BY date
             ORDER BY date
         """,
-        (tenDaysAgo,)
+        (oneMonthAgo,)
     )
     avgEffectivityPerDay = {}
     for row in cursor:
@@ -76,7 +76,45 @@ def league(league_id):
     cursor.execute("SELECT COUNT(*) FROM matches WHERE leagueId = ?", (league_id,))
     parsedMatches = cursor.fetchone()[0]
 
-    return render_template('league.html', teams=teams, league_id=league_id, league_info=league_info, parsedMatches=parsedMatches)
+    oneMonthAgo = (datetime.today() - timedelta(days=31)).strftime('%Y-%m-%d %H-%I')
+    cursor.execute("""
+                   SELECT t.name, SUM(tms.goals)
+                   FROM teamMatchStats tms
+                   JOIN teams t ON t.id = tms.team
+                   JOIN matches m ON m.homeTeam = tms.id OR m.awayTeam = tms.id
+                   JOIN leagues l ON l.id = m.leagueId
+                   WHERE l.id = ? AND m.dateTime >= ?
+                   GROUP BY t.name
+                   ORDER BY SUM(tms.goals) DESC
+                   """, (league_id, oneMonthAgo))
+    goalsLastMonth = {}
+    for row in cursor:
+        goalsLastMonth[row[0]] = row[1]
+
+    cursor.execute("""
+                   SELECT t.name, AVG(tms.goals / tms.expectedGoals) as avg_effectivity
+                   FROM teamMatchStats tms
+                   JOIN matches m ON m.homeTeam = tms.id OR m.awayTeam = tms.id
+                   JOIN teams t ON t.id = tms.team
+                   WHERE tms.expectedGoals IS NOT NULL and tms.expectedGoals > 0 AND m.leagueId = ?
+                   GROUP BY t.id
+                   ORDER BY avg_effectivity DESC
+                   LIMIT 10
+                   """, (league_id,))
+    teamsWithBestEffectivity = []
+    for row in cursor:
+        teamsWithBestEffectivity.append([row[0], round(row[1] or 0, 2)])
+    
+
+    return render_template(
+        'league.html', 
+        teams=teams, 
+        league_id=league_id, 
+        league_info=league_info, 
+        parsedMatches=parsedMatches,
+        goalsLastMonth=goalsLastMonth,
+        teamsWithBestEffectivity=teamsWithBestEffectivity
+    )
 
 @app.route('/team/<league_id>/<team_id>')
 def team(league_id, team_id):
@@ -102,7 +140,7 @@ def team(league_id, team_id):
             "awayGoals": row[4],
         })
 
-    tenDaysAgo = (datetime.today() - timedelta(days=10)).strftime('%Y-%m-%d')
+    oneMonthAgo = (datetime.today() - timedelta(days=31)).strftime('%Y-%m-%d')
     cursor.execute(
         """
             SELECT SUBSTR(m.dateTime, 1, 10) as date, AVG(tms.goals / tms.expectedGoals) as avg_effectivity
@@ -112,7 +150,7 @@ def team(league_id, team_id):
             GROUP BY date
             ORDER BY date
         """,
-        (tenDaysAgo, team_id)
+        (oneMonthAgo, team_id)
     )
     avgEffectivityPerDay = {}
     for row in cursor:

@@ -50,8 +50,6 @@
 <body>
   <!--
     Functionalities:
-    - If only league is selected, it will show some stats for all teams, like which teams scored the most goals last month (kolacovy graf) etc.
-
     - Then stats page, which will show what teams have the best goals / expected goals ratio
     - Also, on this page maybe which teams score the most goals per game
     - Which teams get the most yellow cards per game
@@ -59,7 +57,7 @@
     - However, the main output should be something with the goals / expected goals ratio.
     - The method used should be also not only average, but some other metrics, for example standart deviation of the effectivity, so that how consistently effective they are
   -->
-  <div class="container">
+  <div class="container mb-5">
     <div class="row pt-5">
       <div class="col">
         <p>The primary focus of our statistics is to measure "effectivity," which is calculated as the ratio of goals scored to the team's expected goals in a game. If a team scores more goals than expected, their effectivity exceeds 1; if they score fewer, their effectivity falls below 1. An effectivity of 1 indicates the team scored exactly as expected. If no goals are scored, the effectivity is 0.</p>
@@ -96,7 +94,7 @@
       <div class="col-lg-6 col-12">
         <div class="card">
           <div class="card-body">
-            <div id="goal_effectivity_graph" style="width: 100%; height: 100%;"></div>
+            <div id="goal_effectivity_graph" style="width: 100%; height: 500px;"></div>
           </div>
         </div>
       </div>
