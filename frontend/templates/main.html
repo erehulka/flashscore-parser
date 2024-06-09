@@ -121,7 +121,7 @@
         <div class="col-lg-6 col-12 mt-3">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Teams with best consistency of effectivity</h5>
+              <h5 class="card-title">Teams with best Consistency-Adjusted Effectiveness</h5>
               <ul class="list-group">
                 {% for team in teamsWithBestConsistency %}
                   <li class="list-group-item"><a href="{{ url_for("team", team_id=team[1]) }}">{{ team[0] }}</a> - <b>{{ team[2] }}</b></li>
