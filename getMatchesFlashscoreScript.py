@@ -1,3 +1,4 @@
+import os
 import re
 import sqlite3
 import time
@@ -12,7 +13,7 @@ from utils.parseMatch import parseMatch
 import logging
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename='log/error.log', encoding='utf-8', level=logging.INFO)
+logging.basicConfig(filename=os.path.join(os.path.abspath(__file__), 'log/error.log'), encoding='utf-8', level=logging.INFO)
 
 # Configure browser options
 options = Options()
@@ -58,7 +59,7 @@ for match in matches:
     matchIdParsed = re.sub(r'^g_1_(.*)$', r'\1', matchId) # We need to get only faTuORtF
     matchIds.append(matchIdParsed)
 
-connection = sqlite3.connect('matches.db')
+connection = sqlite3.connect(os.path.join(os.path.abspath(__file__), 'matches.db'))
 
 for id in matchIds:
     try:
