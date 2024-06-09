@@ -66,6 +66,19 @@ def home():
         teamsWithBestEffectivity.append([row[0], row[1], round(row[2] or 0, 2)])
 
     cursor.execute("""
+                   SELECT t.name, t.id, AVG(tms.goals / tms.expectedGoals) / (sqrt(AVG((tms.goals / tms.expectedGoals)*(tms.goals / tms.expectedGoals)) - AVG(tms.goals / tms.expectedGoals)*AVG(tms.goals / tms.expectedGoals)) + 1) as consistency
+                   FROM teamMatchStats tms
+                   JOIN teams t ON t.id = tms.team
+                   WHERE tms.expectedGoals IS NOT NULL and tms.expectedGoals > 0
+                   GROUP BY t.id
+                   ORDER BY consistency DESC
+                   LIMIT 10
+                   """)
+    teamsWithBestConsistency = []
+    for row in cursor:
+        teamsWithBestConsistency.append([row[0], row[1], round(row[2] or 0, 2)])
+
+    cursor.execute("""
                    SELECT t.name, t.id, AVG(tms.goals / tms.expectedGoals) as avg_effectivity
                    FROM teamMatchStats tms
                    JOIN teams t ON t.id = tms.team
@@ -111,7 +124,8 @@ def home():
         teamsWithBestEffectivity=teamsWithBestEffectivity,
         teamsWithWorstEffectivity=teamsWithWorstEffectivity,
         mostYellowCardsPerGame=mostYellowCardsPerGame,
-        mostGoalsPerGame=mostGoalsPerGame
+        mostGoalsPerGame=mostGoalsPerGame,
+        teamsWithBestConsistency=teamsWithBestConsistency
     )
 
 @app.route('/league/<league_id>')

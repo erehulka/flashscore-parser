@@ -48,14 +48,6 @@
   </script>
 </head>
 <body>
-  <!--
-    Functionalities:
-    - Also, on this page maybe which teams score the most goals per game
-    - Which teams get the most yellow cards per game
-
-    - However, the main output should be something with the goals / expected goals ratio.
-    - The method used should be also not only average, but some other metrics, for example standart deviation of the effectivity, so that how consistently effective they are
-  -->
   <div class="container mb-5">
     <div class="row pt-5">
       <div class="col">
@@ -118,6 +110,20 @@
               <h5 class="card-title">Teams with worst effectivity</h5>
               <ul class="list-group">
                 {% for team in teamsWithWorstEffectivity %}
+                  <li class="list-group-item"><a href="{{ url_for("team", team_id=team[1]) }}">{{ team[0] }}</a> - <b>{{ team[2] }}</b></li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      {% if teamsWithBestConsistency %}
+        <div class="col-lg-6 col-12 mt-3">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Teams with best consistency of effectivity</h5>
+              <ul class="list-group">
+                {% for team in teamsWithBestConsistency %}
                   <li class="list-group-item"><a href="{{ url_for("team", team_id=team[1]) }}">{{ team[0] }}</a> - <b>{{ team[2] }}</b></li>
                 {% endfor %}
               </ul>
