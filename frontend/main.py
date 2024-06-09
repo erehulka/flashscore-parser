@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 app = Flask(__name__)
 
 def connect_db():
-    return sqlite3.connect(os.path.join(os.path.abspath(__file__), '../matches.db'))
+    return sqlite3.connect(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../matches.db'))
 
 @app.before_request
 def before_request():
