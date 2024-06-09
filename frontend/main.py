@@ -268,10 +268,3 @@ def team(team_id, league_id = None):
     parsedMatches = cursor.fetchone()[0]
 
     return render_template('team.html', last5Matches=last5Matches, league_id=league_id, avgEffectivityPerDay=avgEffectivityPerDay, averageStats=averageStats, team_info=team_info, parsedMatches=parsedMatches)
-
-
-"""
-TODO:
-- if there is no value, for example for fouls, either not average, do not show the card with zero.
-- Some more stats
-"""
